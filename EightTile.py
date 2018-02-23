@@ -16,6 +16,12 @@ from copy import deepcopy
 _init_state = [[2, 8, 3],
                [1, 6, 4],
                [7, 0, 5]]
+opened = [[row for row in _init_state]]
+closed = []
+max_depth = 5
+goal = [[1, 2, 3],
+        [8, 0, 4],
+        [7, 6, 5]]
 
 
 class EightPuzzle:
@@ -78,10 +84,43 @@ class EightPuzzle:
             # append child state to the list of states.
             self.state_lst.append(clone)
 
+    def depth_first_search(self):
+        depth_count = 0
+        while opened and depth_count <= max_depth:
+            cs_children = []
+            cs = opened.pop()
+            if cs == goal:
+                return True
+            else:
+                count = 0
+
+                for state in self.state_lst:
+                    if state == cs:
+                        self.generate_states(count)
+                        cs_children = self.get_new_moves(count)
+                    count += 1
+
+            closed.insert(0, cs)
+
+            for state in cs_children:
+                if state in opened:
+                    cs_children.remove(state)
+                if state in closed:
+                    cs_children.remove(state)
+
+            for state in cs_children:
+                opened.insert(0, state)
+
+            depth_count += 1
+
+        return False
+
+
+
 
 def main():
     p = EightPuzzle()
-    p.generate_states(0)
+    p.depth_first_search()
     p.display()
 
 
